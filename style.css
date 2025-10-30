@@ -1,0 +1,375 @@
+/* 🌍 RESET + BASE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background-color: #1e1e1e;
+  color: #fff;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+}
+
+/* sidebar */
+.tabs {
+  width: 50px;
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.tabs:hover {
+  width: 200px;
+}
+
+/* hamburger + title */
+.top-area {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+/* 🌑 Logo + Title container */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* keep centered when collapsed */
+  width: 100%;
+  height: 70px;
+  position: relative;
+  overflow: visible; /* prevents cutting off */
+  transition: all 0.4s ease;
+}
+
+/* 🌕 Logo */
+.logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🌘 Title (split into two stacked words) */
+.sidebar-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.1;
+  position: absolute;
+  left: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.4s ease, left 0.4s ease;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.sidebar-title span:first-child {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sidebar-title span:last-child {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* 🌔 Expanded sidebar behavior */
+.tabs:hover .logo-container {
+  justify-content: flex-start;
+  padding-left: 15px;
+}
+
+.tabs:hover .logo {
+  left: 20px; /* slide left slightly */
+  transform: translateX(0);
+}
+
+.tabs:hover .sidebar-title {
+  opacity: 1;
+  left: 60px;
+}
+
+/* tabs container */
+.tabs-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* individual tab */
+.tab {
+  padding: 15px 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: background 0.2s ease, opacity 0.3s ease;
+  flex-shrink: 0;
+}
+
+.tabs:hover .tab {
+  opacity: 1;
+}
+
+.tab:hover {
+  background-color: #444;
+}
+
+.tab.active {
+  background-color: #5a5a5a;
+  color: #fff;
+}
+
+.tab a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* main area */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #1e1e1e;
+}
+
+/* content in area */
+.tab-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* map wrapper */
+.map-wrapper {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #1e1e1e;
+}
+
+/* svg base */
+#world-map {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  object-fit: contain;
+  overflow: hidden;
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+  image-rendering: optimizeQuality;
+  vector-effect: non-scaling-stroke;
+  transform-origin: center center;
+}
+
+/* svg paths */
+svg path {
+  fill: #5a5a5a;
+  stroke: #444;
+  stroke-width: 0.25;
+  transition: fill 0.3s ease;
+  cursor: pointer;
+}
+
+/* Keep clicked country white */
+.active-country path,
+path.active-country {
+  fill: #ffffff !important;
+  stroke: #fff !important;
+}
+
+svg path:hover {
+  fill: #ffffff;
+}
+
+.country:hover path {
+  fill: #ffffff;
+  transition: 0.3s;
+}
+
+/* smooth transform */
+#mapGroup {
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* prevent scrollbar */
+svg, .map-wrapper, .main {
+  overflow: hidden;
+}
+
+/* country info panel */
+.country-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background-color: rgba(20,20,20,0.95);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+  z-index: 50;
+  padding: 0;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .35s ease, visibility 0s linear .35s;
+}
+
+.country-panel.visible {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+/* ✅ Keep tabs always at top, full width */
+.country-tabs {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly; /* ✨ evenly distribute tabs across panel width */
+  padding: 12px 24px;
+  background: linear-gradient(rgba(20,20,20,0.98), rgba(20,20,20,0.95));
+  box-sizing: border-box;
+  white-space: nowrap;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Each tab text */
+.country-tab {
+  color: #bdbdbd;
+  cursor: pointer;
+  font-size: 15px;
+  letter-spacing: 0.2px;
+  padding: 6px 0;
+  position: relative;
+  user-select: none;
+  transition: color .2s ease;
+}
+
+.country-tab:hover { color: #e0e0e0; }
+.country-tab.active { color: #ffffff; font-weight: 600; }
+
+/* ✅ Animated underline (fade + slide) */
+.country-tab::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 2px;
+  width: 0%;
+  background: #ffffff;
+  opacity: 0;
+  transition: width .3s cubic-bezier(.2,.8,.2,1), opacity .2s ease;
+}
+
+.country-tab.active::after {
+  width: 100%;
+  opacity: 1;
+}
+
+/* country-panel content */
+.country-panel-content {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 22px;
+  box-sizing: border-box;
+  min-height: 0;
+}
+
+.country-panel-content h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.country-panel-content img {
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+  margin-bottom: 14px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+.country-panel-content p {
+  line-height: 1.5;
+  font-size: 16px;
+  color: #ddd;
+}
+
+#siteLoader {
+  position: fixed;
+  inset: 0;
+  background-color: #0f0f0f;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+}
+
+#siteLoader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transition-delay: 0.2s;
+}
+
+.loader-circle {
+  width: 48px;
+  height: 48px;
+  border: 3px solid #444;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
